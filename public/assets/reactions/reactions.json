@@ -1,14 +1,4 @@
 {
-  "calm": [
-    {
-      "name": "shock",
-      "file": "calm/shock.jpg"
-    }
-  ],
-  "hype": [
-    {
-      "name": "happy",
-      "file": "hype/happy.jpg"
-    }
-  ]
+  "calm": [],
+  "hype": []
 }

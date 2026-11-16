@@ -48,7 +48,7 @@ function getImg(src){let e=IC.get(src);if(!e){e=new Image();e.onload=()=>redraw(
 const ok=e=>e.complete&&e.naturalWidth>0;
 function geo(W){const k=W/1080,o=S.out,pad=Math.round(o.pad*k),gap=Math.round(o.gap*k),bw=o.bw*k,[a,b]=o.asp.split("/").map(Number),pw=W-2*pad,ph=Math.round(pw*b/a);
  return{k,pad,gap,bw,pw,ph,H:Math.round(2*pad+4*ph+3*gap),rects:[0,1,2,3].map(i=>({x:pad,y:pad+i*(ph+gap),w:pw,h:ph}))}}
-const fit=(iw,ih,pw,ph,z)=>{const s=Math.max(pw/iw,ph/ih)*z,dw=iw*s,dh=ih*s;return{dw,dh,ex:dw-pw,ey:dh-ph}};
+const fit=(iw,ih,pw,ph,z)=>{const s=(S.out.rf==="contain"?Math.min:Math.max)(pw/iw,ph/ih)*z,dw=iw*s,dh=ih*s;return{dw,dh,ex:Math.max(0,dw-pw),ey:Math.max(0,dh-ph)}};
 function cover(c,im,r,st){const f=fit(im.naturalWidth,im.naturalHeight,r.w,r.h,st.zoom||1);
  c.drawImage(im,r.x+(r.w-f.dw)/2+(st.ox||0)*f.ex/2,r.y+(r.h-f.dh)/2+(st.oy||0)*f.ey/2,f.dw,f.dh)}
 function place(c,im,r){const iw=im.naturalWidth,ih=im.naturalHeight;
@@ -63,7 +63,7 @@ function draw(cv,W,ui){
  c.fillStyle=S.out.bg;c.fillRect(0,0,W,g.H);
  S.order.forEach((k,i)=>{const r=g.rects[i];c.save();c.beginPath();c.rect(r.x,r.y,r.w,r.h);c.clip();c.fillStyle="#e9ecf1";c.fillRect(r.x,r.y,r.w,r.h);
   if(k[0]==="u"){const m=S.imgs[+k[1]],im=m&&getImg(m.data);
-   if(im&&ok(im))cover(c,im,r,m);
+   if(im&&ok(im)){if(S.out.rf==="contain"){c.fillStyle=S.out.bg;c.fillRect(r.x,r.y,r.w,r.h)}cover(c,im,r,m)}
    else if(ui){c.fillStyle="#7a8294";c.textAlign="center";c.textBaseline="middle";c.font=`700 ${r.h*.1}px ${FONT}`;c.fillText(`画像${+k[1]+1}を設定`,r.x+r.w/2,r.y+r.h/2-r.h*.05);
     c.font=`500 ${r.h*.055}px ${FONT}`;c.fillText("タップ・ドロップ・貼り付け",r.x+r.w/2,r.y+r.h/2+r.h*.09)}
   }else{const l=reacts(k),it=l[Math.min(S.react[k],l.length-1)],im=getImg(it.src);if(ok(im))place(c,im,r)}
